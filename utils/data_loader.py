@@ -39,9 +39,9 @@ def get_flowers_dataframes(train_percentage = 0.8, test_percentage = 0.1):
         ValueError: If train_percentage + test_percentage is greater than 1.
     """
     data = {
-        FlowerType.Daffodil: pd.DataFrame(columns=['filenames', 'labels']),
-        FlowerType.Sunflower: pd.DataFrame(columns=['filenames', 'labels']),
-        FlowerType.Danedelion:  pd.DataFrame(columns=['filenames', 'labels'])
+        FlowerType.Daffodil: pd.DataFrame(columns=['filename', 'class']),
+        FlowerType.Sunflower: pd.DataFrame(columns=['filename', 'class']),
+        FlowerType.Danedelion:  pd.DataFrame(columns=['filename', 'class'])
     }
 
     if(train_percentage + test_percentage > 1):
@@ -53,11 +53,11 @@ def get_flowers_dataframes(train_percentage = 0.8, test_percentage = 0.1):
             starting_index = flower.value * IMAGES_PER_FLOWER_TYPE
             for i in range(starting_index, starting_index + IMAGES_PER_FLOWER_TYPE):
                 line = lines[i].strip()
-                data[flower] = pd.concat([data[flower], pd.DataFrame({'filenames': [line], 'labels': [flower.name]})], ignore_index=True)
+                data[flower] = pd.concat([data[flower], pd.DataFrame({'filename': [line], 'class': [flower.name]})], ignore_index=True)
 
-    train_data = pd.DataFrame(columns=['filenames', 'labels'])
-    test_data = pd.DataFrame(columns=['filenames', 'labels'])
-    val_data = pd.DataFrame(columns=['filenames', 'labels'])
+    train_data = pd.DataFrame(columns=['filename', 'class'])
+    test_data = pd.DataFrame(columns=['filename', 'class'])
+    val_data = pd.DataFrame(columns=['filename', 'class'])
 
     for flower in FlowerType:
         flower_data = data[flower]
@@ -104,3 +104,7 @@ def get_image_generators_from_dataframes(train_data, test_data, val_data):
     val_generator = val_datagen.flow_from_dataframe(val_data, BASE_DIR, target_size=(500, 500), batch_size=20, class_mode='categorical', shuffle=False)
 
     return train_generator, test_generator, val_generator
+
+
+train, test, val = get_flowers_dataframes()
+train_gen, test_gen, val_gen = get_image_generators_from_dataframes(train, test, val)
